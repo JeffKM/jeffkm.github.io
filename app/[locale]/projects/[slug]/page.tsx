@@ -1,0 +1,12 @@
+import Link from "next/link";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { PageShell } from "@/components/page-shell";
+import { ProjectVisual } from "@/components/project-visual";
+import { copy, getProject, isLocale, locales, projects } from "@/lib/content";
+import { pageMetadata } from "@/lib/metadata";
+
+export function generateStaticParams(){return locales.flatMap(locale=>projects.map(project=>({locale,slug:project.slug})))}
+export async function generateMetadata({params}:{params:Promise<{locale:string;slug:string}>}):Promise<Metadata>{const{locale,slug}=await params;const project=getProject(slug);if(!isLocale(locale)||!project)return{};return pageMetadata(locale,project.title,project.summary[locale],`/projects/${slug}`)}
+
+export default async function ProjectPage({params}:{params:Promise<{locale:string;slug:string}>}){const{locale,slug}=await params;if(!isLocale(locale))notFound();const project=getProject(slug);if(!project)notFound();const t=copy[locale];const sections=locale==="ko"?[["01","문제",project.problem[locale]],["02","나의 역할",project.role[locale]],["03","핵심 결정",project.decision[locale]],["04","검증과 현재",project.validation[locale]]]:[["01","Problem",project.problem[locale]],["02","My role",project.role[locale]],["03","Key decision",project.decision[locale]],["04","Validation & now",project.validation[locale]]];return <PageShell locale={locale} currentPath={`projects/${slug}`}><article><header className={`case-hero accent-${project.accent}`}><div className="shell case-heading"><div><Link className="back-link" href={`/${locale}/projects/`}>← {locale==="ko"?"프로젝트":"Projects"}</Link><p className="eyebrow">{project.eyebrow[locale]}</p><h1>{project.title}</h1><p>{project.summary[locale]}</p><div className="tag-row">{project.tags.map(tag=><span key={tag}>{tag}</span>)}</div></div><ProjectVisual project={project} large/></div></header><div className="shell case-body"><aside><dl><div><dt>{t.status}</dt><dd><span className="status-dot"/>{project.status}</dd></div><div><dt>{t.verified}</dt><dd>{project.verifiedAt}</dd></div></dl><div className="case-links">{project.live?<a href={project.live} target="_blank" rel="noreferrer">{t.visit} ↗</a>:null}<a href={project.source} target="_blank" rel="noreferrer">{t.source} ↗</a></div></aside><div className="case-sections">{sections.map(([n,h,p])=><section key={n}><span>{n}</span><h2>{h}</h2><p>{p}</p></section>)}</div></div></article></PageShell>}
