@@ -1,7 +1,9 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { PageShell } from "@/components/page-shell";
-import { ProjectCard } from "@/components/project-card";
+import { ProjectVisual } from "@/components/project-visual";
+import { KineticType } from "@/components/kinetic-type";
+import { MotionControl } from "@/components/motion-control";
 import { copy, isLocale, projects } from "@/lib/content";
 import { pageMetadata } from "@/lib/metadata";
 
@@ -15,19 +17,72 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const { locale: value } = await params;
   if (!isLocale(value)) return null;
   const locale = value;
-  const t = copy[locale];
+  const featured = projects.slice(0, 3);
+
   return <PageShell locale={locale}>
-    <section className="hero shell">
-      <div className="hero-kicker"><span className="availability-dot"/>{locale === "ko" ? "Java · Spring 백엔드 포지션을 준비하고 있습니다" : "Preparing for Java · Spring backend roles"}</div>
-      <p className="identity">이경민 <span>·</span> Lee Kyungmin</p>
-      <h1>{locale === "ko" ? <>제품을 만들고,<br/><em>증거로 말합니다.</em></> : <>I build products,<br/><em>then prove they work.</em></>}</h1>
-      <p className="hero-copy">{t.intro}</p>
-      <div className="hero-actions"><Link className="button primary" href={`/${locale}/projects/`}>{t.nav.projects} <span>↗</span></Link><a className="button ghost" href="mailto:jeffkm@inha.edu">{t.email}</a></div>
-      <div className="orbit-mark" aria-hidden="true"><span>JK</span><i/><i/><i/></div>
+    <section className="kinetic-hero">
+      <h1 className="sr-only">{locale === "ko" ? "제품을 만들고 검증하는 백엔드 지향 개발자 이경민" : "Kyungmin Lee, backend-oriented product developer who builds and validates products"}</h1>
+      <div className="kinetic-hero-meta">
+        <span>Portfolio / 2026</span>
+        <p>{locale === "ko" ? "아이디어를 작동하는 흐름으로" : "Ideas into working flows"}</p>
+      </div>
+      <div className="kinetic-hero-type">
+        <KineticType word="BUILD" direction="left"/>
+        <div className="kinetic-hero-stage" aria-hidden="true">
+          <div className="flow-machine">
+            <span className="flow-node node-input">?</span>
+            <span className="flow-track"><i/><i/><i/></span>
+            <span className="flow-node node-output">✓</span>
+          </div>
+        </div>
+        <KineticType word="VERIFY" direction="right" outline/>
+      </div>
+      <div className="kinetic-scroll-hint"><span>↓</span>{locale === "ko" ? "스크롤해서 흐름 보기" : "Scroll through the flow"}</div>
+      <MotionControl locale={locale}/>
+      <div className="edge-orb edge-orb-left" aria-hidden="true"><span>API</span></div>
+      <div className="edge-orb edge-orb-right" aria-hidden="true"><span>DB</span></div>
     </section>
-    <section className="statement"><div className="shell statement-grid"><p>{locale === "ko" ? "제가 중요하게 보는 것" : "What I optimize for"}</p><blockquote>{locale === "ko" ? <>기능의 개수보다 <strong>완료된 사용자 흐름</strong>, 기술 이름보다 <strong>설명 가능한 결정</strong>.</> : <>Completed user journeys over feature counts. <strong>Explainable decisions</strong> over a list of technologies.</>}</blockquote></div></section>
-    <section className="section shell"><div className="section-heading"><div><p className="eyebrow">01 / {t.featured}</p><h2>{locale === "ko" ? "제품으로 증명한 일" : "Work proven through products"}</h2></div><Link className="text-link" href={`/${locale}/projects/`}>{t.allProjects} →</Link></div><div className="featured-grid">{projects.slice(0,2).map((project)=><ProjectCard key={project.slug} project={project} locale={locale} featured/>)}</div></section>
-    <section className="approach section"><div className="shell"><div className="section-heading"><div><p className="eyebrow">02 / Approach</p><h2>{locale === "ko" ? "만드는 방식" : "How I work"}</h2></div></div><div className="approach-grid">{(locale === "ko" ? [["01","문제를 좁힙니다","기능보다 사용자가 해결하려는 판단과 행동을 먼저 정의합니다."],["02","경계를 설계합니다","데이터의 소유권, 상태 변경과 실패가 전파되는 지점을 명시합니다."],["03","실제로 검증합니다","테스트 통과에 그치지 않고 핵심 흐름을 직접 사용해 확인합니다."]] : [["01","Narrow the problem","Define the decision and behavior a user needs before listing features."],["02","Design boundaries","Make ownership, state transitions, and failure propagation explicit."],["03","Verify in context","Go beyond passing tests and exercise the complete user journey."]]).map(([n,h,p])=><article key={n}><span>{n}</span><h3>{h}</h3><p>{p}</p></article>)}</div></div></section>
-    <section className="contact-band"><div className="shell"><p className="eyebrow">03 / Contact</p><h2>{t.contact}</h2><a className="button inverse" href="mailto:jeffkm@inha.edu">jeffkm@inha.edu ↗</a></div></section>
+
+    <section className="kinetic-manifesto">
+      <div className="kinetic-section-label">{locale === "ko" ? "제가 하는 일" : "What I do"}</div>
+      <p>{locale === "ko" ? <>화면 뒤의 <strong>구조</strong>를 설계하고,<br/>데이터가 실패해도 <em>흐름은 무너지지 않게.</em></> : <>I design the <strong>structure</strong> behind the screen,<br/>so the flow holds even when <em>data fails.</em></>}</p>
+      <div className="manifesto-stickers" aria-hidden="true"><span>DATA</span><span>FLOW</span><span>TEST</span></div>
+    </section>
+
+    <section className="kinetic-work">
+      <div className="kinetic-work-heading">
+        <p>{locale === "ko" ? "대표 작업" : "Selected work"}</p>
+        <h2>{locale === "ko" ? <>만든 것을<br/><span>작동하게.</span></> : <>Making ideas<br/><span>work.</span></>}</h2>
+        <div className="kinetic-squiggle" aria-hidden="true">↝</div>
+      </div>
+      <div className="kinetic-work-list">
+        {featured.map((project, index) => <Link className={`kinetic-work-card accent-${project.accent}`} href={`/${locale}/projects/${project.slug}/`} key={project.slug}>
+          <div className="kinetic-work-number">0{index + 1}</div>
+          <ProjectVisual project={project}/>
+          <div className="kinetic-work-copy">
+            <div><span>{project.status}</span><span>{project.tags[0]}</span></div>
+            <h3>{project.title}</h3>
+            <p>{project.eyebrow[locale]}</p>
+          </div>
+          <b aria-hidden="true">↗</b>
+        </Link>)}
+      </div>
+      <Link className="kinetic-pill-link" aria-label={locale === "ko" ? "프로젝트" : "Projects"} href={`/${locale}/projects/`}><small>{locale === "ko" ? "제품 사례 전체 보기" : "Explore every product case"}</small><strong>{locale === "ko" ? "프로젝트 보기" : "VIEW PROJECTS"}</strong><span>↗</span></Link>
+    </section>
+
+    <section className="kinetic-capabilities">
+      <p>{locale === "ko" ? "제가 연결하는 것" : "What I connect"}</p>
+      <div className="capability-lines">
+        <div><span>{locale === "ko" ? "제품 판단" : "PRODUCT"}</span><i>+</i><strong>{locale === "ko" ? "사용자 흐름" : "USER FLOW"}</strong></div>
+        <div><strong>{locale === "ko" ? "백엔드 구조" : "BACKEND"}</strong><i>+</i><span>{locale === "ko" ? "데이터" : "DATA"}</span></div>
+        <div><span>{locale === "ko" ? "AI 실행" : "AI EXECUTION"}</span><i>+</i><strong>{locale === "ko" ? "직접 검증" : "HUMAN REVIEW"}</strong></div>
+      </div>
+      <div className="capability-crawler" aria-hidden="true"><span>REQUEST</span><i>→</i><span>DOMAIN</span><i>→</i><span>DATABASE</span><i>→</i><span>PROOF</span></div>
+    </section>
+
+    <section className="kinetic-contact">
+      <p>{locale === "ko" ? "새로운 제품과 협업 이야기를 기다립니다" : "Open for product work and collaborations"}</p>
+      <a href="mailto:jeffkm@inha.edu"><span>{locale === "ko" ? "함께 만들기" : "CONTACT JEFF"}</span><b>↗</b></a>
+    </section>
   </PageShell>;
 }
