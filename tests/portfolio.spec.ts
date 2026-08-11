@@ -35,3 +35,23 @@ test("keyboard skip link and mobile content work", async ({ page, browserName })
   }
   await expect(page.getByText("Pitch-AC", { exact: true }).first()).toBeVisible();
 });
+
+test("kinetic menu and motion controls remain user-controlled", async ({ page }) => {
+  await page.goto("/ko/");
+  await page.getByRole("button", { name: "모션 정지" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-motion", "paused");
+  const menuButton = page.getByRole("button", { name: "메뉴" });
+  await menuButton.click();
+  await expect(page.getByRole("button", { name: "닫기" })).toHaveAttribute("aria-expanded", "true");
+  await expect(page.getByRole("navigation", { name: "전체 메뉴" })).toBeVisible();
+});
+
+test("reduced motion presents a static hero", async ({ browser }) => {
+  const context = await browser.newContext({ reducedMotion: "reduce" });
+  const page = await context.newPage();
+  await page.goto("/en/");
+  await expect(page.getByRole("button", { name: "Pause motion" })).toBeHidden();
+  const animationName = await page.locator(".kinetic-word").first().evaluate((element) => getComputedStyle(element).animationName);
+  expect(animationName).toBe("none");
+  await context.close();
+});
